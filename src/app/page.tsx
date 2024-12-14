@@ -3,6 +3,9 @@ import banner from "../assets/banner.jpg";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { delay } from "@/lib/utils";
+import { Suspense } from "react";
+import { getWixClient } from "@/lib/wix-client.base";
 
 export default function Home() {
   return (
@@ -32,7 +35,41 @@ export default function Home() {
             <div className="absolute inset-0 bg-gradient-to-r from-secondary via-transparent to-transparent"></div>
           </div>
         </div>
+
+        <Suspense fallback="loading">
+          <FeaturedProducts />
+        </Suspense>
       </main>
     </div>
   );
 }
+
+const FeaturedProducts = async () => {
+  await delay(1000);
+
+  const wixClient = getWixClient();
+
+  const { collection } = await wixClient.collections.getCollectionBySlug(
+    "featured-products"
+  );
+  if (!collection?._id) {
+    return null;
+  }
+
+  const featuredProducts = await wixClient.products
+    .queryProducts()
+    .hasSome("collectionIds", [collection._id])
+    .descending("lastUpdated")
+    .find();
+
+  if (!featuredProducts.items.length) {
+    return null;
+  }
+
+  return (
+    <div className="space-y-5">
+      <h1 className="text-2xl font-bold">Featured Products</h1>
+      <div className="flex flex-col sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4"></div>
+    </div>
+  );
+};
