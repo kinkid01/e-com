@@ -68,7 +68,7 @@ const FeaturedProducts = async () => {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-bold">Featured Products.</h1>
+      <h1 className="text-2xl font-bold">Featured Products</h1>
       <div className="flex flex-col sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4"></div>
     </div>
   );
